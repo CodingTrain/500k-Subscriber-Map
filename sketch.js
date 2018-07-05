@@ -14,6 +14,8 @@ let canvas;
 
 let data = [];
 
+let type;
+let currentColor;
 const options = {
   lat: 0,
   lng: 0,
@@ -33,6 +35,30 @@ function setup() {
   trainMap = mappa.tileMap(options);
   trainMap.overlay(canvas);
 
+  let radio = createSelect();
+  radio.option('Views');
+  radio.option('Watch Time');
+  radio.option('Minutes');
+  textAlign(CENTER);
+
+  currentColor = color(255,0,200, 100); // default color 
+  type = 'views'; // default value
+  processData(type);
+  console.log(data)
+}
+
+function draw() {
+  clear();
+  for (let country of data) {
+    const pix = trainMap.latLngToPixel(country.lat, country.lon);
+    fill(currentColor);
+    const zoom = trainMap.zoom();
+    const scl = pow(2, zoom); // * sin(frameCount * 0.1);
+    ellipse(pix.x, pix.y, country.diameter * scl);
+  }
+}
+
+function processData(type) {
   let maxSubs = 0;
   let minSubs = Infinity;
 
@@ -44,7 +70,7 @@ function setup() {
       let lon = latlon[1];
       // let count = Number(row.get('views'));
       // let count = Number(row.get('watch_time_minutes'));
-      let count = Number(row.get('subscribers'));
+      let count = Number(row.get(type));
       data.push({
         lat,
         lon,
@@ -65,25 +91,4 @@ function setup() {
   for (let country of data) {
     country.diameter = map(sqrt(country.count), minD, maxD, 1, 20);
   }
-
-  //console.log(data);
-
-
-
-  // console.log(countries);
-  //console.log(youtubeData);
-}
-
-function draw() {
-  clear();
-  for (let country of data) {
-    const pix = trainMap.latLngToPixel(country.lat, country.lon);
-    fill(frameCount % 255, 0, 200, 100);
-    const zoom = trainMap.zoom();
-    const scl = pow(2, zoom); // * sin(frameCount * 0.1);
-    ellipse(pix.x, pix.y, country.diameter * scl);
-  }
-
-
-
 }
