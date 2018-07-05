@@ -36,13 +36,15 @@ function setup() {
   canvas = createCanvas(800, 600);
   trainMap = mappa.tileMap(options);
   trainMap.overlay(canvas);
-  createP('Select a type!');
+
+  createP('Select category!');
   select = createSelect();
   select.option('Subscribers');
   select.option('Watch Time');
   select.option('Views');
   select.changed(processData);
   createP(''); // look, I don't know how to use p5 properly, I used this to push the canvas a little down ;w;
+
   currentColor = color(255, 0, 200, 100); // default color 
   processData();
 }
