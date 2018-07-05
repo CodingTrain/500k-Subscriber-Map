@@ -14,8 +14,10 @@ let canvas;
 
 let data = [];
 
-let type;
+let select;
+
 let currentColor;
+
 const options = {
   lat: 0,
   lng: 0,
@@ -35,16 +37,14 @@ function setup() {
   trainMap = mappa.tileMap(options);
   trainMap.overlay(canvas);
 
-  let radio = createSelect();
-  radio.option('Views');
-  radio.option('Watch Time');
-  radio.option('Minutes');
-  textAlign(CENTER);
+  select = createSelect();
+  select.option('Subscribers');
+  select.option('Watch Time');
+  select.option('Views');
+  select.changed(processData);
 
-  currentColor = color(255,0,200, 100); // default color 
-  type = 'views'; // default value
-  processData(type);
-  console.log(data)
+  currentColor = color(255, 0, 200, 100); // default color 
+  processData();
 }
 
 function draw() {
@@ -58,9 +58,26 @@ function draw() {
   }
 }
 
-function processData(type) {
-  let maxSubs = 0;
-  let minSubs = Infinity;
+function processData() {
+  data = []; // always clear the array when picking a new type
+
+  let type = (() => {
+    switch (select.value()) {
+      case 'Views':
+        currentColor = color(255, 0, 200, 100);
+        return 'views';
+      case 'Watch Time':
+        currentColor = color(200, 0, 100, 100);
+        return 'watch_time_minutes';
+      case 'Subscribers':
+        currentColor = color(64, 250, 200, 100);
+        return 'subscribers';
+    }
+  })(); // neat way to assign value, based on a switch case 
+
+
+  let maxValue = 0; // changed to something more generic, as we no longer only work with subs
+  let minValue = Infinity;
 
   for (let row of youtubeData.rows) {
     let country = row.get('country_id').toLowerCase();
@@ -68,25 +85,23 @@ function processData(type) {
     if (latlon) {
       let lat = latlon[0];
       let lon = latlon[1];
-      // let count = Number(row.get('views'));
-      // let count = Number(row.get('watch_time_minutes'));
       let count = Number(row.get(type));
       data.push({
         lat,
         lon,
         count
       });
-      if (count > maxSubs) {
-        maxSubs = count;
+      if (count > maxValue) {
+        maxValue = count;
       }
-      if (count < minSubs) {
-        minSubs = count;
+      if (count < minValue) {
+        minValue = count;
       }
     }
   }
 
-  let minD = sqrt(minSubs);
-  let maxD = sqrt(maxSubs);
+  let minD = sqrt(minValue);
+  let maxD = sqrt(maxValue);
 
   for (let country of data) {
     country.diameter = map(sqrt(country.count), minD, maxD, 1, 20);
