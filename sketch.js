@@ -11,10 +11,9 @@ let countries;
 const mappa = new Mappa('Leaflet');
 let trainMap;
 let canvas;
+let dataSource;
 
 let data = [];
-
-let select;
 
 let currentColor;
 
@@ -29,7 +28,6 @@ function preload() {
   // youtubeData = loadTable('subscribers_geo.csv', 'header');
   youtubeData = loadTable('watch_time_geo.csv', 'header');
   countries = loadJSON('countries.json');
-
 }
 
 function setup() {
@@ -37,13 +35,8 @@ function setup() {
   trainMap = mappa.tileMap(options);
   trainMap.overlay(canvas);
 
-  createP('Select category!');
-  select = createSelect();
-  select.option('Subscribers');
-  select.option('Watch Time');
-  select.option('Views');
-  select.changed(processData);
-  createP(''); // look, I don't know how to use p5 properly, I used this to push the canvas a little down ;w;
+  dataSource = select('#dataSource');
+  dataSource.changed(processData);
 
   currentColor = color(255, 0, 200, 100); // default color 
   processData();
@@ -63,20 +56,19 @@ function draw() {
 function processData() {
   data = []; // always clear the array when picking a new type
 
-  let type = (() => {
-    switch (select.value()) {
-      case 'Views':
-        currentColor = color(255, 0, 200, 100);
-        return 'views';
-      case 'Watch Time':
-        currentColor = color(200, 0, 100, 100);
-        return 'watch_time_minutes';
-      case 'Subscribers':
-        currentColor = color(64, 250, 200, 100);
-        return 'subscribers';
-    }
-  })(); // neat way to assign value, based on a switch case 
+  let type = dataSource.value();
+  switch (type) {
+    case 'subscribers':
+      currentColor = color(64, 250, 200, 100);
+      break;
+    case 'views':
+      currentColor = color(255, 0, 200, 100);
+      break;
+    case 'watch_time_minutes':
+      currentColor = color(200, 0, 100, 100);
+      break;
 
+  }
 
   let maxValue = 0; // changed to something more generic, as we no longer only work with subs
   let minValue = Infinity;
