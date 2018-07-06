@@ -1,3 +1,9 @@
-.wrap {
-    text-align: center;
+#wrapper {
+    margin: 10px;
 }
+
+body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+  }

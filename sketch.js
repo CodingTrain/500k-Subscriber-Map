@@ -35,8 +35,8 @@ function setup() {
   trainMap = mappa.tileMap(options);
   trainMap.overlay(canvas);
 
-  dataSource = select('#dataSource');
-  dataSource.changed(processData);
+  dataSource = select('#dataSource'); // get the DOM element from the HTML
+  dataSource.changed(processData); // assign callback
 
   currentColor = color(255, 0, 200, 100); // default color 
   processData();
@@ -56,7 +56,7 @@ function draw() {
 function processData() {
   data = []; // always clear the array when picking a new type
 
-  let type = dataSource.value();
+  let type = dataSource.value(); 
   switch (type) {
     case 'subscribers':
       currentColor = color(64, 250, 200, 100);
@@ -67,7 +67,6 @@ function processData() {
     case 'watch_time_minutes':
       currentColor = color(200, 0, 100, 100);
       break;
-
   }
 
   let maxValue = 0; // changed to something more generic, as we no longer only work with subs
